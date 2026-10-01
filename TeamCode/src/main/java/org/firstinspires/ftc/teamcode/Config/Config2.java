@@ -19,7 +19,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  You also you need "robot = new Config(this);" before robot.init.
  */
 
-public class Config {
+public class Config2 {
 
 
     // These are variables for opmode types
@@ -28,14 +28,14 @@ public class Config {
 
 
     // This allows a linear Opmode to use this
-    public Config(LinearOpMode linearOpMode) {
+    public Config2(LinearOpMode linearOpMode) {
 
         this.linearOpMode = linearOpMode;
     }
 
 
     // This allows a regular Opmode to use this
-    public Config(OpMode opmode) {
+    public Config2(OpMode opmode) {
 
         this.opmode = opmode;
     }

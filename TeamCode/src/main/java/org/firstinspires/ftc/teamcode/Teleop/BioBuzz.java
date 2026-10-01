@@ -1,49 +1,18 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
+import org.firstinspires.ftc.teamcode.pedro.Config;
 
 @TeleOp(name = "BioBuzz")
 public class BioBuzz extends OpMode {
 
-    // Drive Motors
-    private DcMotorEx frontLeftMotor;
-    private DcMotorEx frontRightMotor;
-    private DcMotorEx backLeftMotor;
-    private DcMotorEx backRightMotor;
-
-    // Intake
-    private DcMotorEx intake;
-
-    // Intake Toggle
-    private boolean intakeOn = false;
-    private boolean previousB = false;
-
+    Config robot;
     @Override
     public void init() {
 
-        // Hardware Mapping
-        frontLeftMotor  = hardwareMap.get(DcMotorEx.class, "fl");
-        frontRightMotor = hardwareMap.get(DcMotorEx.class, "fr");
-        backLeftMotor   = hardwareMap.get(DcMotorEx.class, "bl");
-        backRightMotor  = hardwareMap.get(DcMotorEx.class, "br");
-
-        intake = hardwareMap.get(DcMotorEx.class, "intake");
-
-        // Motor Directions
-        frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        intake.setDirection(DcMotorSimple.Direction.FORWARD);
-
-        // Brake Mode
-        frontLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        frontRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        robot = new Config(this);
+        robot.init();
 
         telemetry.addLine("BioBuzz Initialized");
         telemetry.update();
@@ -85,31 +54,31 @@ public class BioBuzz extends OpMode {
         br *= speed;
 
         // Set Motor Powers
-        frontLeftMotor.setPower(fl);
-        backLeftMotor.setPower(bl);
-        frontRightMotor.setPower(fr);
-        backRightMotor.setPower(br);
+        robot.fr.setPower(fl);
+        robot.bl.setPower(bl);
+        robot.fr.setPower(fr);
+        robot.br.setPower(br);
 
         // =========================
         // INTAKE TOGGLE
         // =========================
 
         // Toggle intake with B
-        if (gamepad1.b && !previousB) {
-            intakeOn = !intakeOn;
+        if (gamepad1.b && !robot.bPressed) {
+            robot.intakeOn = !robot.intakeOn;
         }
 
-        previousB = gamepad1.b;
+        robot.bPressed = gamepad1.b;
 
         // Reverse intake with X
         if (gamepad1.x) {
-            intake.setPower(-1.0);
+            robot.intake.setPower(-1.0);
         }
-        else if (intakeOn) {
-            intake.setPower(1.0);
+        else if (robot.intakeOn) {
+            robot.intake.setPower(1.0);
         }
         else {
-            intake.setPower(0.0);
+            robot.intake.setPower(0.0);
         }
 
         // =========================
@@ -117,7 +86,7 @@ public class BioBuzz extends OpMode {
         // =========================
 
         telemetry.addData("Speed", speed);
-        telemetry.addData("Intake On", intakeOn);
+        telemetry.addData("Intake On", robot.intakeOn);
 
         telemetry.addData("FL", fl);
         telemetry.addData("FR", fr);
