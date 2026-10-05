@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
+import static com.pedropathing.api.Paths.curve;
 import static com.pedropathing.api.Paths.line;
 
 import com.pedropathing.api.PoseFactory;
@@ -27,6 +28,12 @@ public class BioBuzzAuto extends OpMode {
         return line(startPose, park).linear(startPose, park);
     }
 
+    private final Pose controlPose = p.of(36, 60, 45);
+
+    private Path curvyPark() {
+        return curve(startPose, controlPose, park).linear(startPose, park);
+    }
+
 
     @Override
     public void init() {
@@ -38,6 +45,7 @@ public class BioBuzzAuto extends OpMode {
 
     @Override
     public void start() {
+
     }
 
     @Override
