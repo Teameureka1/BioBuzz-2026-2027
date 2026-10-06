@@ -1,15 +1,20 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
-import static com.pedropathing.api.Paths.curve;
 import static com.pedropathing.api.Paths.line;
+import static com.pedropathing.ivy.Scheduler.schedule;
+import static com.pedropathing.ivy.groups.Groups.sequential;
+import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
 import com.pedropathing.api.PoseFactory;
 import com.pedropathing.follower.Follower;
+import com.pedropathing.ivy.Command;
+import com.pedropathing.ivy.Scheduler;
 import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.teamcode.OpModeStorage;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 
 
@@ -19,36 +24,72 @@ public class BioBuzzAuto extends OpMode {
 
     private Follower follower;
 
-    private final PoseFactory p = PoseFactory.degrees();
+    private final PoseFactory poseFactory = PoseFactory.degrees();
+    private final Pose startPose = poseFactory.of(24, 24, 0);
+    private final Pose scorePose = poseFactory.of(48, 48, 90);
+    private final Pose parkPose = poseFactory.of(72, 48, 90);
 
-    private final Pose startPose = p.of(24, 24, 0);
-    private final Pose park = p.of(48, 48, 90);
 
-    private Path park() {
-        return line(startPose, park).linear(startPose, park);
+
+    private Path startToPark() {
+        return line(startPose, scorePose).linear(startPose, scorePose);
     }
 
-    private final Pose controlPose = p.of(36, 60, 45);
 
-    private Path curvyPark() {
-        return curve(startPose, controlPose, park).linear(startPose, park);
+
+    private Path startToScore() {
+        return line(startPose, scorePose).linear(startPose, scorePose);
+    }
+    private Path park() {
+        return line(scorePose, parkPose).linear(scorePose, parkPose);
+    }
+
+    private Command autoRoutine() {
+        return sequential(
+                follow(follower, startToScore()),
+                follow(follower, park())
+        );
     }
 
 
     @Override
     public void init() {
+        Scheduler.reset();
+
         follower = Constants.create(hardwareMap);
         follower.setPose(startPose);
+        follower.update();
 
 
     }
 
     @Override
     public void start() {
-
+            schedule(autoRoutine());
     }
+
 
     @Override
     public void loop() {
+        follower.update();
+        Scheduler.execute();
+
+
+        telemetry.addData("X", follower.pose().x());
+        telemetry.addData("Y", follower.pose().y());
+        telemetry.addData("Heading", Math.toDegrees(follower.pose().heading()));
+        telemetry.addData("Follower Mode", follower.mode());
+
+        telemetry.addData("Path completion", follower.completion());
+        telemetry.addData("Distance remaining in path", follower.remainingDistance());
+        telemetry.update();
+
     }
+
+
+    @Override
+    public void stop() {
+        OpModeStorage.autonomousEndPose = follower.pose(); //saves your position in that file
+    }
+
 }
