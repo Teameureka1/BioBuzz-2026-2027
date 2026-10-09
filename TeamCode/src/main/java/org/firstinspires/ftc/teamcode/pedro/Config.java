@@ -13,10 +13,7 @@ public class Config {
         public DcMotorEx br;
         public DcMotorEx intake;
 
-
-
-
-        // Intake Toggle
+           // Intake Toggle
         public boolean intakeOn = false;
         public boolean bPressed = false;
 
